@@ -115,6 +115,11 @@ def up(event=None):
 def down(event = None):
     pass
     
+
+def closeFile(event=None):
+    print("close file")   
+
+
 def quitApp(event=None):
     prog.quit()
 
@@ -129,7 +134,7 @@ filemenu.add_command(label="New", accelerator="Ctrl+N")
 filemenu.add_command(label = "Open", accelerator="Ctrl+O", command=openFile)
 filemenu.add_command(label = "Save", accelerator="Ctrl+S", command=saveInFile)
 filemenu.add_command(label = "Save as...", command=saveAs)
-filemenu.add_command(label = "Close", accelerator="Ctrl+W")
+filemenu.add_command(label = "Close", accelerator="Ctrl+W", command=closeFile)
 filemenu.add_command(label = "Print in PDF", accelerator="Ctrl+P")
 filemenu.add_separator()
 filemenu.add_command(label = "Exit", accelerator="Ctrl+Q", command=quitApp)
@@ -147,6 +152,7 @@ prog.bind("<Control-s>", saveInFile)
 prog.bind("<Control-o>", openFile)
 prog.bind("<Return>", save)
 prog.bind("<Control-q>", quitApp)
+prog.bind("<Control-w>", closeFile)
 prog.bind("<Button-1>", lambda e: print(str(dated.get_date())))
 prog.bind("<Up>", lambda e: print("Up"))
 prog.bind("<Down>", lambda e: print("Down"))
@@ -193,6 +199,9 @@ tk.Label(cadre2, text = "Description : ", font = "Arial").grid(
 
 
 desc = tk.Text(cadre2, width=22, height=6, font = "Arial", highlightthickness=1)
+scrollb = tk.Scrollbar(cadre2, command=desc.yview)
+desc['yscrollcommand'] = scrollb.set
+scrollb.grid(row=4, column= 4, sticky='ns')
 desc.grid(row = 4, column = 0, sticky="EW", columnspan=4)
 
 sv = tk.StringVar()
