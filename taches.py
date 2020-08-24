@@ -58,6 +58,7 @@ def saveInFile(event=None):
     else:
         with open(currFile, "w") as f:
             json.dump(tasks, f, indent=4)
+    filemenu.entryconfigure(4, state="normal")
             
 def saveAs(event=None):
     filename = fd.asksaveasfilename(initialdir = "./Data", defaultextension=".json", filetypes=[("JSON Files", "*.json")])
@@ -66,6 +67,7 @@ def saveAs(event=None):
         json.dump(tasks, f)
         currFile = filename
         prog.title("TaskManager" + " - " + os.path.basename(filename))
+        filemenu.entryconfigure(4, state="normal")
             
 
 def openFile(event=None):
@@ -73,25 +75,24 @@ def openFile(event=None):
     filename = fd.askopenfilename(initialdir = "./Data", defaultextension=".json", filetypes=[("JSON Files", "*.json")])
     if filename=="" or len(filename) == 0: return
     with open(filename, "r") as f:
-        c = json.load(f)
+        tasks = json.load(f)
         prog.title("TaskManager" + " - " + os.path.basename(filename))
         currFile = filename
         listbox.delete(0,tk.END)
-        for i, item in enumerate(c):
+        for i, item in enumerate(tasks):
             listbox.insert(tk.END, str(i+1) + "- " + item["title"])
         listbox.insert(tk.END, "+")
         listbox.select_set(0)
-        svt.set(c[0]["title"])
+        svt.set(tasks[0]["title"])
         desc.delete(1.0,"end")
-        desc.insert(1.0,c[0]["description"])
-        dated.set_date(date.fromisoformat(c[0]["start"]))
-        datef.set_date(date.fromisoformat(c[0]["end"]))
-        tasks=c
-        print(tasks)
+        desc.insert(1.0,tasks[0]["description"])
+        dated.set_date(date.fromisoformat(tasks[0]["start"]))
+        datef.set_date(date.fromisoformat(tasks[0]["end"]))
+        filemenu.entryconfigure(4, state="normal")
             
 
 
-def onselect(event):
+def onselect(event=None):
     global newTask
     if listbox.curselection() == tuple():
         listbox.select_set(tk.ACTIVE)
@@ -101,23 +102,47 @@ def onselect(event):
         svt.set(newTask["title"])
         desc.delete(1.0,"end")
         desc.insert(1.0,newTask["description"])
+        dated.set_date(date.today())
+        datef.set_date(date.today())
     else:
         index = int(curr.split("-")[0])-1
         if index < len(tasks):
             svt.set(tasks[index]["title"])
             desc.delete(1.0,"end")
             desc.insert(1.0,tasks[index]["description"])
+            dated.set_date(date.fromisoformat(tasks[index]["start"]))
+            datef.set_date(date.fromisoformat(tasks[index]["end"]))
             
             
 def up(event=None):
-    pass
+    c = listbox.curselection()[0]
+    if c > 0:
+        listbox.selection_clear(0, 'end')
+        listbox.select_set(c-1)
+        onselect()
     
 def down(event = None):
-    pass
+    global tasks
+    c = listbox.curselection()[0]
+    if c < len(tasks):
+        listbox.selection_clear(0, 'end')
+        listbox.select_set(c+1)
+        onselect()
     
 
 def closeFile(event=None):
-    print("close file")   
+    global currFile
+    filemenu.entryconfigure(4, state="disabled")
+    svt.set("")
+    desc.delete(1.0,"end")
+    listbox.delete(0,tk.END)
+    listbox.insert(tk.END, "+")
+    currFile = ""
+    prog.title("TaskManager")
+    listbox.select_set(0)
+    dated.set_date(date.today())
+    datef.set_date(date.today())
+     
 
 
 def quitApp(event=None):
@@ -134,7 +159,7 @@ filemenu.add_command(label="New", accelerator="Ctrl+N")
 filemenu.add_command(label = "Open", accelerator="Ctrl+O", command=openFile)
 filemenu.add_command(label = "Save", accelerator="Ctrl+S", command=saveInFile)
 filemenu.add_command(label = "Save as...", command=saveAs)
-filemenu.add_command(label = "Close", accelerator="Ctrl+W", command=closeFile)
+filemenu.add_command(label = "Close", accelerator="Ctrl+W", command=closeFile, state="disabled")
 filemenu.add_command(label = "Print in PDF", accelerator="Ctrl+P")
 filemenu.add_separator()
 filemenu.add_command(label = "Exit", accelerator="Ctrl+Q", command=quitApp)
@@ -154,8 +179,8 @@ prog.bind("<Return>", save)
 prog.bind("<Control-q>", quitApp)
 prog.bind("<Control-w>", closeFile)
 prog.bind("<Button-1>", lambda e: print(str(dated.get_date())))
-prog.bind("<Up>", lambda e: print("Up"))
-prog.bind("<Down>", lambda e: print("Down"))
+prog.bind("<Alt-Up>", up)
+prog.bind("<Alt-Down>", down)
 ### end Menu configuration 
 
 fen = ttk.Frame(prog, padding="10 10 10 10")
@@ -168,6 +193,7 @@ listbox = tk.Listbox(cadre1, height=13, font="Arial", exportselection=0)
 listbox.grid(row =0, column = 0, sticky="NWES")
 
 listbox.bind('<<ListboxSelect>>', onselect)
+listbox.bind('<FocusIn>', lambda e: titre.focus_set())
 
 for i, item in enumerate(tasks):
     listbox.insert(tk.END, str(i+1) + "- " + item["title"])
@@ -212,6 +238,5 @@ errLabel.grid(row = 5, column = 0, sticky="EW", columnspan=4)
 
 B = tk.Button(cadre2, text="Valider", command=lambda: save(), font = "Arial")
 B.grid(row = 6, column = 0, sticky="E", columnspan=4)
-
 
 prog.mainloop()
