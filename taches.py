@@ -5,17 +5,21 @@ from tkinter import filedialog as fd
 import json
 import os
 from datetime import date
+from tkinter import messagebox as mb 
 
 font = "Arial"
 tasks = []
 newTask = {"title":"", "description":"", "start":None, "end":None}
 currFile = None
+changed = False
+title= "Untitled"
 
 def get_desc():
     return desc.get("1.0", tk.END+'-1c')
     
 
 def save(event = None):
+    global changed
     if titre.get() == "" :
         sv.set("Empty title!")
     elif dated.get_date() > datef.get_date() :
@@ -44,10 +48,12 @@ def save(event = None):
             tasks[index - 1] = task
             #listbox.insert(tk.END, "+")
             listbox.select_set(index - 1)
+    prog.title("TaskManager" + " - " + title + " *")
+    changed = True
             
             
 def saveInFile(event=None):
-    global currFile
+    global currFile, tasks, title
     if currFile == None:
         filename = fd.asksaveasfilename(initialdir = "./Data", defaultextension=".json", filetypes=[("JSON Files", "*.json")])
         if filename=="" or len(filename) == 0: return
@@ -55,12 +61,16 @@ def saveInFile(event=None):
             json.dump(tasks, f)
             currFile = filename
             prog.title("TaskManager" + " - " + os.path.basename(filename))
+            title = os.path.basename(filename)
     else:
         with open(currFile, "w") as f:
             json.dump(tasks, f, indent=4)
+            prog.title("TaskManager" + " - " + title)
     filemenu.entryconfigure(4, state="normal")
             
 def saveAs(event=None):
+    global currFile, title, tasks
+    
     filename = fd.asksaveasfilename(initialdir = "./Data", defaultextension=".json", filetypes=[("JSON Files", "*.json")])
     if filename=="" or len(filename) == 0: return
     with open(filename, "w") as f:
@@ -68,15 +78,16 @@ def saveAs(event=None):
         currFile = filename
         prog.title("TaskManager" + " - " + os.path.basename(filename))
         filemenu.entryconfigure(4, state="normal")
-            
+    title = os.path.basename(filename)
 
 def openFile(event=None):
-    global currFile, tasks
+    global currFile, tasks, title
     filename = fd.askopenfilename(initialdir = "./Data", defaultextension=".json", filetypes=[("JSON Files", "*.json")])
     if filename=="" or len(filename) == 0: return
     with open(filename, "r") as f:
         tasks = json.load(f)
         prog.title("TaskManager" + " - " + os.path.basename(filename))
+        title = os.path.basename(filename)
         currFile = filename
         listbox.delete(0,tk.END)
         for i, item in enumerate(tasks):
@@ -104,8 +115,10 @@ def onselect(event=None):
         desc.insert(1.0,newTask["description"])
         dated.set_date(date.today())
         datef.set_date(date.today())
+        B2["state"] = "disabled"
     else:
         index = int(curr.split("-")[0])-1
+        B2["state"] = "normal"
         if index < len(tasks):
             svt.set(tasks[index]["title"])
             desc.delete(1.0,"end")
@@ -131,21 +144,72 @@ def down(event = None):
     
 
 def closeFile(event=None):
-    global currFile
+    global currFile, tasks, changed, title
+    
+    if changed:
+        answer = mb.askyesnocancel(title="TaskManager", message="Do you want to save changed in the file?")
+        print(answer)
+        if answer == None:
+            return
+        if answer:
+            with open(currFile, "w") as f:
+                json.dump(tasks, f, indent=4)
+
     filemenu.entryconfigure(4, state="disabled")
     svt.set("")
+    tasks=[]
     desc.delete(1.0,"end")
     listbox.delete(0,tk.END)
     listbox.insert(tk.END, "+")
-    currFile = ""
+    currFile = None
     prog.title("TaskManager")
     listbox.select_set(0)
     dated.set_date(date.today())
     datef.set_date(date.today())
      
+     
+def removeTask(event = None):
+    global tasks
+    
+    curr = listbox.get(listbox.curselection())
+    if curr=="+":
+        return
+    index = int(curr.split("-")[0])
+    del tasks[index-1]
+    listbox.delete(0,tk.END)
+    for i, item in enumerate(tasks):
+        listbox.insert(tk.END, str(i+1) + "- " + item["title"])
+    listbox.insert(tk.END, "+")
+    listbox.select_set(index-1)
+    if index-1 >= len(tasks):
+        svt.set("")
+        desc.delete(1.0,"end")
+        dated.set_date(date.today())
+        datef.set_date(date.today())
+    else:
+        svt.set(tasks[index-1]["title"])
+        desc.delete(1.0,"end")
+        desc.insert(1.0,tasks[index-1]["description"])
+        dated.set_date(date.fromisoformat(tasks[index-1]["start"]))
+        datef.set_date(date.fromisoformat(tasks[index-1]["end"]))
+    
+    
+    
+def about(event = None):
+    print("About")
 
 
 def quitApp(event=None):
+    global currFile, tasks, changed, title
+    
+    if changed:
+        answer = mb.askyesnocancel(title="TaskManager", message="Do you want to save changed in the file?")
+        print(answer)
+        if answer == None:
+            return
+        if answer:
+            with open(currFile, "w") as f:
+                json.dump(tasks, f, indent=4)
     prog.quit()
 
 prog = tk.Tk()
@@ -168,19 +232,21 @@ menubar.add_cascade(label = "File", menu = filemenu)
 
 helpmenu = tk.Menu(menubar, tearoff = 0)
 helpmenu.add_command(label="Help", accelerator="F1")
-helpmenu.add_command(label="About")
+helpmenu.add_command(label="About", accelerator="Alt+A", command=about)
 menubar.add_cascade(label = "Help", menu = helpmenu)
 
 prog.config(menu = menubar)
 
 prog.bind("<Control-s>", saveInFile)
 prog.bind("<Control-o>", openFile)
-prog.bind("<Return>", save)
+prog.bind("<Alt-Return>", save)
 prog.bind("<Control-q>", quitApp)
 prog.bind("<Control-w>", closeFile)
-prog.bind("<Button-1>", lambda e: print(str(dated.get_date())))
+#prog.bind("<Button-1>", lambda e: print(str(dated.get_date())))
 prog.bind("<Alt-Up>", up)
 prog.bind("<Alt-Down>", down)
+prog.bind("<Alt-a>", about)
+prog.bind("<Alt-d>", removeTask)
 ### end Menu configuration 
 
 fen = ttk.Frame(prog, padding="10 10 10 10")
@@ -204,7 +270,7 @@ listbox.select_set(0)
 cadre2 = ttk.Frame(fen, padding="5 5 5 5")
 cadre2.grid(row =0, column = 1)
 
-tk.Label(cadre2, text = "Titre : ", font = "Arial").grid(
+tk.Label(cadre2, text = "Title: ", font = "Arial").grid(
     row = 0, column = 0, columnspan = 4, sticky="W")
 
 svt = tk.StringVar()
@@ -220,8 +286,7 @@ datef = cal.DateEntry(cadre2, date_pattern="dd/mm/Y", font = "Arial", locale="fr
 datef.grid(row = 2, column = 3, sticky="E")
 
 
-tk.Label(cadre2, text = "Description : ", font = "Arial").grid(
-    row = 3, column = 0, columnspan = 4, sticky="W")
+tk.Label(cadre2, text = "Description: ", font = "Arial").grid(row = 3, column = 0, columnspan = 4, sticky="W")
 
 
 desc = tk.Text(cadre2, width=22, height=6, font = "Arial", highlightthickness=1)
@@ -236,7 +301,9 @@ errLabel = tk.Label(cadre2, textvariable=sv, fg="red")
 errLabel.grid(row = 5, column = 0, sticky="EW", columnspan=4)
 
 
-B = tk.Button(cadre2, text="Valider", command=lambda: save(), font = "Arial")
-B.grid(row = 6, column = 0, sticky="E", columnspan=4)
+B1 = tk.Button(cadre2, text="Validate", command=lambda: save(), font = "Arial")
+B1.grid(row = 6, column = 2, sticky="E", columnspan=2)
+B2 = tk.Button(cadre2, text="Remove", command=lambda: removeTask(), font = "Arial", state="disabled")
+B2.grid(row = 6, column = 0, sticky="W", columnspan=2)
 
 prog.mainloop()
