@@ -48,8 +48,10 @@ def save(event = None):
             tasks[index - 1] = task
             #listbox.insert(tk.END, "+")
             listbox.select_set(index - 1)
-    prog.title("TaskManager" + " - " + title + " *")
-    changed = True
+        prog.title("TaskManager" + " - " + title + " *")
+        changed = True
+        B2["state"] = "normal"
+    
             
             
 def saveInFile(event=None):
@@ -66,7 +68,7 @@ def saveInFile(event=None):
         with open(currFile, "w") as f:
             json.dump(tasks, f, indent=4)
             prog.title("TaskManager" + " - " + title)
-    filemenu.entryconfigure(4, state="normal")
+    filemenu.entryconfigure(3, state="normal")
             
 def saveAs(event=None):
     global currFile, title, tasks
@@ -77,7 +79,7 @@ def saveAs(event=None):
         json.dump(tasks, f)
         currFile = filename
         prog.title("TaskManager" + " - " + os.path.basename(filename))
-        filemenu.entryconfigure(4, state="normal")
+        filemenu.entryconfigure(3, state="normal")
     title = os.path.basename(filename)
 
 def openFile(event=None):
@@ -94,12 +96,21 @@ def openFile(event=None):
             listbox.insert(tk.END, str(i+1) + "- " + item["title"])
         listbox.insert(tk.END, "+")
         listbox.select_set(0)
-        svt.set(tasks[0]["title"])
-        desc.delete(1.0,"end")
-        desc.insert(1.0,tasks[0]["description"])
-        dated.set_date(date.fromisoformat(tasks[0]["start"]))
-        datef.set_date(date.fromisoformat(tasks[0]["end"]))
-        filemenu.entryconfigure(4, state="normal")
+        if len(tasks) > 0:
+            svt.set(tasks[0]["title"])
+            desc.delete(1.0,"end")
+            desc.insert(1.0,tasks[0]["description"])
+            dated.set_date(date.fromisoformat(tasks[0]["start"]))
+            datef.set_date(date.fromisoformat(tasks[0]["end"]))
+            filemenu.entryconfigure(3, state="normal")
+            B2["state"] = "normal"
+        else:
+            svt.set("")
+            desc.delete(1.0,"end")
+            dated.set_date(date.today())
+            datef.set_date(date.today())
+            filemenu.entryconfigure(3, state="normal")
+            B2["state"] = "disabled"
             
 
 
@@ -162,10 +173,12 @@ def closeFile(event=None):
     listbox.delete(0,tk.END)
     listbox.insert(tk.END, "+")
     currFile = None
-    prog.title("TaskManager")
+    title= "Untitled"
+    prog.title("TaskManager" + " - " + title)
     listbox.select_set(0)
     dated.set_date(date.today())
     datef.set_date(date.today())
+    B2["state"] = "disabled"
      
      
 def removeTask(event = None):
@@ -186,6 +199,7 @@ def removeTask(event = None):
         desc.delete(1.0,"end")
         dated.set_date(date.today())
         datef.set_date(date.today())
+        B2["state"] = "disabled"
     else:
         svt.set(tasks[index-1]["title"])
         desc.delete(1.0,"end")
@@ -213,13 +227,13 @@ def quitApp(event=None):
     prog.quit()
 
 prog = tk.Tk()
-prog.title("TaskManager")
+prog.title("TaskManager" + " - " + title)
 
 # Menu
 
 menubar = tk.Menu(prog)
 filemenu = tk.Menu(menubar, tearoff = 0)
-filemenu.add_command(label="New", accelerator="Ctrl+N")
+#filemenu.add_command(label="New", accelerator="Ctrl+N")
 filemenu.add_command(label = "Open", accelerator="Ctrl+O", command=openFile)
 filemenu.add_command(label = "Save", accelerator="Ctrl+S", command=saveInFile)
 filemenu.add_command(label = "Save as...", command=saveAs)
