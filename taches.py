@@ -228,7 +228,6 @@ def about(event = None):
         
 def helpApp(event = None):
     global HelpFrame, HelpDisplayed
-    print("help")
     if not HelpDisplayed:
         HelpFrame.grid(row=0, column=6, rowspan=6, sticky="NS")
         HelpDisplayed = True
@@ -346,6 +345,7 @@ B2.grid(row = 6, column = 0, sticky="W", columnspan=2)
 
 ## About Frame
 AboutFrame = tk.Frame(fen)
+
 built = tk.Label(AboutFrame, text="(built on or after 2020-08-27)")
 copyRight = tk.Label(AboutFrame, text="Dr. Lyes Touati (c) 2020")
 ttk.Separator(AboutFrame, orient=tk.HORIZONTAL).pack()
@@ -356,6 +356,42 @@ tk.Button(AboutFrame, text="Hide", anchor="w", command=about).pack(side="right")
 
 ## Help Frame
 HelpFrame = tk.Frame(fen)
-tk.Label(HelpFrame, text="Help").pack()
+tk.Label(HelpFrame, text="Help", font='Helvetica 18 bold').pack()
+tk.Label(HelpFrame, text="TaskManager is simple Python application to manage tasks.").pack()
+tk.Label(HelpFrame, text="The data are stored in JSON files.").pack()
+tk.Label(HelpFrame, text="Shortcuts", font='Helvetica 18 bold').pack()
 
+shortcutFrame = tk.Frame(HelpFrame)
+
+tk.Label(shortcutFrame, text="<Ctrl>-<O>:", font="bold").grid(row=0, column=0, sticky="E")
+tk.Label(shortcutFrame, text=" Open a file").grid(row=0, column=1, sticky="W")
+
+tk.Label(shortcutFrame, text="<Ctrl>-<S>:", font="bold").grid(row=1, column=0, sticky="E")
+tk.Label(shortcutFrame, text=" Save the current file").grid(row=1, column=1, sticky="W")
+
+tk.Label(shortcutFrame, text="<Ctrl>-<W>:", font="bold").grid(row=2, column=0, sticky="E")
+tk.Label(shortcutFrame, text=" Close current file").grid(row=2, column=1, sticky="W")
+
+tk.Label(shortcutFrame, text="<Ctrl>-<Q>:", font="bold").grid(row=3, column=0, sticky="E")
+tk.Label(shortcutFrame, text=" Quit application").grid(row=3, column=1, sticky="W")
+
+
+
+
+tk.Label(shortcutFrame, text="<Alt>-<Up>:", font="bold").grid(row=4, column=0, sticky="E")
+tk.Label(shortcutFrame, text=" Select previous tasks (go Up in the list)").grid(row=4, column=1, sticky="W")
+
+tk.Label(shortcutFrame, text="<Alt>-<Down>:", font="bold").grid(row=5, column=0, sticky="E")
+tk.Label(shortcutFrame, text=" Select next tasks (go Down in the list)").grid(row=5, column=1, sticky="W")
+
+tk.Label(shortcutFrame, text="<Alt>-<D>:", font="bold").grid(row=6, column=0, sticky="E")
+tk.Label(shortcutFrame, text=" Delete selected task").grid(row=6, column=1, sticky="W")
+
+tk.Label(shortcutFrame, text="<Atl>-<A>:", font="bold").grid(row=7, column=0, sticky="E")
+tk.Label(shortcutFrame, text=" Toggle `About` Frame").grid(row=7, column=1, sticky="W")
+
+tk.Label(shortcutFrame, text="<F1>:", font="bold").grid(row=8, column=0, sticky="E")
+tk.Label(shortcutFrame, text=" Toggle `Help` Frame").grid(row=8, column=1, sticky="W")
+    
+shortcutFrame.pack()
 prog.mainloop()
