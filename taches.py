@@ -14,6 +14,9 @@ currFile = None
 changed = False
 title= "Untitled"
 
+AboutDisplayed = False
+HelpDisplayed = False
+
 def get_desc():
     return desc.get("1.0", tk.END+'-1c')
     
@@ -55,7 +58,7 @@ def save(event = None):
             
             
 def saveInFile(event=None):
-    global currFile, tasks, title
+    global currFile, tasks, title, changed
     if currFile == None:
         filename = fd.asksaveasfilename(initialdir = "./Data", defaultextension=".json", filetypes=[("JSON Files", "*.json")])
         if filename=="" or len(filename) == 0: return
@@ -69,9 +72,10 @@ def saveInFile(event=None):
             json.dump(tasks, f, indent=4)
             prog.title("TaskManager" + " - " + title)
     filemenu.entryconfigure(3, state="normal")
+    changed = False
             
 def saveAs(event=None):
-    global currFile, title, tasks
+    global currFile, title, tasks, changed
     
     filename = fd.asksaveasfilename(initialdir = "./Data", defaultextension=".json", filetypes=[("JSON Files", "*.json")])
     if filename=="" or len(filename) == 0: return
@@ -81,12 +85,14 @@ def saveAs(event=None):
         prog.title("TaskManager" + " - " + os.path.basename(filename))
         filemenu.entryconfigure(3, state="normal")
     title = os.path.basename(filename)
+    changed = False
 
 def openFile(event=None):
-    global currFile, tasks, title
+    global currFile, tasks, title, changed
     filename = fd.askopenfilename(initialdir = "./Data", defaultextension=".json", filetypes=[("JSON Files", "*.json")])
     if filename=="" or len(filename) == 0: return
     with open(filename, "r") as f:
+        changed = False
         tasks = json.load(f)
         prog.title("TaskManager" + " - " + os.path.basename(filename))
         title = os.path.basename(filename)
@@ -182,11 +188,13 @@ def closeFile(event=None):
      
      
 def removeTask(event = None):
-    global tasks
+    global tasks, changed, title
     
     curr = listbox.get(listbox.curselection())
     if curr=="+":
         return
+    changed = True
+    prog.title("TaskManager" + " - " + title +  " *")
     index = int(curr.split("-")[0])
     del tasks[index-1]
     listbox.delete(0,tk.END)
@@ -210,8 +218,23 @@ def removeTask(event = None):
     
     
 def about(event = None):
-    print("About")
-
+    global AboutFrame, AboutDisplayed
+    if not AboutDisplayed:
+        AboutFrame.grid(row=7, column=0, columnspan=4, sticky="EW")
+        AboutDisplayed = True
+    else:
+        AboutFrame.grid_forget()
+        AboutDisplayed = False
+        
+def helpApp(event = None):
+    global HelpFrame, HelpDisplayed
+    print("help")
+    if not HelpDisplayed:
+        HelpFrame.grid(row=0, column=6, rowspan=6, sticky="NS")
+        HelpDisplayed = True
+    else:
+        HelpFrame.grid_forget()
+        HelpDisplayed = False
 
 def quitApp(event=None):
     global currFile, tasks, changed, title
@@ -245,7 +268,7 @@ menubar.add_cascade(label = "File", menu = filemenu)
 
 
 helpmenu = tk.Menu(menubar, tearoff = 0)
-helpmenu.add_command(label="Help", accelerator="F1")
+helpmenu.add_command(label="Help", accelerator="F1", command=helpApp)
 helpmenu.add_command(label="About", accelerator="Alt+A", command=about)
 menubar.add_cascade(label = "Help", menu = helpmenu)
 
@@ -261,6 +284,7 @@ prog.bind("<Alt-Up>", up)
 prog.bind("<Alt-Down>", down)
 prog.bind("<Alt-a>", about)
 prog.bind("<Alt-d>", removeTask)
+prog.bind("<F1>", helpApp)
 ### end Menu configuration 
 
 fen = ttk.Frame(prog, padding="10 10 10 10")
@@ -319,5 +343,19 @@ B1 = tk.Button(cadre2, text="Validate", command=lambda: save(), font = "Arial")
 B1.grid(row = 6, column = 2, sticky="E", columnspan=2)
 B2 = tk.Button(cadre2, text="Remove", command=lambda: removeTask(), font = "Arial", state="disabled")
 B2.grid(row = 6, column = 0, sticky="W", columnspan=2)
+
+## About Frame
+AboutFrame = tk.Frame(fen)
+built = tk.Label(AboutFrame, text="(built on or after 2020-08-27)")
+copyRight = tk.Label(AboutFrame, text="Dr. Lyes Touati (c) 2020")
+ttk.Separator(AboutFrame, orient=tk.HORIZONTAL).pack()
+built.pack()
+copyRight.pack()
+tk.Button(AboutFrame, text="Hide", anchor="w", command=about).pack(side="right")
+
+
+## Help Frame
+HelpFrame = tk.Frame(fen)
+tk.Label(HelpFrame, text="Help").pack()
 
 prog.mainloop()
