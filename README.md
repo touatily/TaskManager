@@ -21,6 +21,7 @@ The data are stored in JSON files.
  - `<Alt>-<Down>`: Select next tasks (go Down in the list)
  - `<Alt>-<D>`: Delete selected task
  - `<Atl>-<A>`: Toggle `About` Frame
+ - `<Atl>-<V>`: Validate changes in memory (but not on disk)
  - `<F1>`:  Toggle `Help` Frame
     
 ## Pictures

@@ -172,7 +172,7 @@ def closeFile(event=None):
             with open(currFile, "w") as f:
                 json.dump(tasks, f, indent=4)
 
-    filemenu.entryconfigure(4, state="disabled")
+    filemenu.entryconfigure(3, state="disabled")
     svt.set("")
     tasks=[]
     desc.delete(1.0,"end")
@@ -240,7 +240,6 @@ def quitApp(event=None):
     
     if changed:
         answer = mb.askyesnocancel(title="TaskManager", message="Do you want to save changed in the file?")
-        print(answer)
         if answer == None:
             return
         if answer:
@@ -275,7 +274,7 @@ prog.config(menu = menubar)
 
 prog.bind("<Control-s>", saveInFile)
 prog.bind("<Control-o>", openFile)
-prog.bind("<Alt-Return>", save)
+prog.bind("<Alt-v>", save)
 prog.bind("<Control-q>", quitApp)
 prog.bind("<Control-w>", closeFile)
 #prog.bind("<Button-1>", lambda e: print(str(dated.get_date())))
