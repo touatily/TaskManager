@@ -91,6 +91,7 @@ def openFile(event=None):
     global currFile, tasks, title, changed
     filename = fd.askopenfilename(initialdir = "./Data", defaultextension=".json", filetypes=[("JSON Files", "*.json")])
     if filename=="" or len(filename) == 0: return
+    closeFile()
     with open(filename, "r") as f:
         changed = False
         tasks = json.load(f)
@@ -164,8 +165,7 @@ def closeFile(event=None):
     global currFile, tasks, changed, title
     
     if changed:
-        answer = mb.askyesnocancel(title="TaskManager", message="Do you want to save changed in the file?")
-        print(answer)
+        answer = mb.askyesnocancel(title="TaskManager - " + title, message="Do you want to save changed in the file?")
         if answer == None:
             return
         if answer:
@@ -239,13 +239,16 @@ def quitApp(event=None):
     global currFile, tasks, changed, title
     
     if changed:
-        answer = mb.askyesnocancel(title="TaskManager", message="Do you want to save changed in the file?")
+        answer = mb.askyesnocancel(title="TaskManager - "+ title , message="Do you want to save changed in the file?")
         if answer == None:
             return
         if answer:
             with open(currFile, "w") as f:
                 json.dump(tasks, f, indent=4)
     prog.quit()
+    
+def printPDF(event=None):
+    mb.showinfo(title="TaskManager", message="This functionality is not yet developped!")
 
 prog = tk.Tk()
 prog.title("TaskManager" + " - " + title)
@@ -259,7 +262,7 @@ filemenu.add_command(label = "Open", accelerator="Ctrl+O", command=openFile)
 filemenu.add_command(label = "Save", accelerator="Ctrl+S", command=saveInFile)
 filemenu.add_command(label = "Save as...", command=saveAs)
 filemenu.add_command(label = "Close", accelerator="Ctrl+W", command=closeFile, state="disabled")
-filemenu.add_command(label = "Print in PDF", accelerator="Ctrl+P")
+filemenu.add_command(label = "Print in PDF", accelerator="Ctrl+P", command=printPDF)
 filemenu.add_separator()
 filemenu.add_command(label = "Exit", accelerator="Ctrl+Q", command=quitApp)
 menubar.add_cascade(label = "File", menu = filemenu)
@@ -282,6 +285,7 @@ prog.bind("<Alt-Up>", up)
 prog.bind("<Alt-Down>", down)
 prog.bind("<Alt-a>", about)
 prog.bind("<Alt-d>", removeTask)
+prog.bind("<Control-p>", printPDF)
 prog.bind("<F1>", helpApp)
 ### end Menu configuration 
 
@@ -313,11 +317,11 @@ svt = tk.StringVar()
 titre = tk.Entry(cadre2, textvariable=svt, width=50, font = "Arial", highlightthickness=1)
 titre.grid(row = 1, column = 0, columnspan=4)
 
-tk.Label(cadre2, text = "Date début : ", font = "Arial").grid(row = 2, column = 0, sticky="W")
+tk.Label(cadre2, text = "Start Date: ", font = "Arial").grid(row = 2, column = 0, sticky="W")
 dated = cal.DateEntry(cadre2, date_pattern="dd/mm/Y", font = "Arial", locale="fr_FR", borderwidth=1)
 dated.grid(row = 2, column = 1)
 
-tk.Label(cadre2, text = "Date fin : ", font = "Arial").grid(row = 2, column = 2, sticky="W")
+tk.Label(cadre2, text = "End Date: ", font = "Arial").grid(row = 2, column = 2, sticky="W")
 datef = cal.DateEntry(cadre2, date_pattern="dd/mm/Y", font = "Arial", locale="fr_FR", borderwidth=1)
 datef.grid(row = 2, column = 3, sticky="E")
 
@@ -345,8 +349,8 @@ B2.grid(row = 6, column = 0, sticky="W", columnspan=2)
 ## About Frame
 AboutFrame = tk.Frame(fen)
 
-built = tk.Label(AboutFrame, text="(built on or after 2020-08-27)")
-copyRight = tk.Label(AboutFrame, text="Dr. Lyes Touati (c) 2020")
+built = tk.Label(AboutFrame, text="(built on or after 2020-08)")
+copyRight = tk.Label(AboutFrame, text="Lyes Touati (c) 2020")
 ttk.Separator(AboutFrame, orient=tk.HORIZONTAL).pack()
 built.pack()
 copyRight.pack()
