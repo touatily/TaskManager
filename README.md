@@ -3,11 +3,22 @@
 TaskManager is simple Python application to manage tasks.
 The data are stored in JSON files.
 
+## Requirements
+
+- The application needs Python 3 to work
+- You need to install [`tkclaendar`](https://pypi.org/project/tkcalendar)
+    - `pip install tkcalendar`
+    
+## Usage
+
+- Download project: `git clone https://github.com/touatily/TaskManager.git`
+- Run the application: `cd TaskManager && python3 taskManager.py` 
+
 ## Features
 
  - A `task` contains the information: title, description, start date, and end date
  - You have the possiblity to save many tasks in a file
- - You have the standard functionnalities: Open, Save, Save As ..., and `Close` file.
+ - You have the standard functionnalities: `Open`, `Save`, `Save As ...`, and `Close` file.
  - You have the possibility to add, remove, and edit tasks of a file
     
     
@@ -26,3 +37,7 @@ The data are stored in JSON files.
     
 ## Pictures
 
+![Application](https://raw.githubusercontent.com/touatily/TaskManager/master/Pictures/Capture1.PNG)
+![Application](https://raw.githubusercontent.com/touatily/TaskManager/master/Pictures/Capture2.PNG)
+![Application](https://raw.githubusercontent.com/touatily/TaskManager/master/Pictures/Capture3.PNG)
+![Application](https://raw.githubusercontent.com/touatily/TaskManager/master/Pictures/Capture4.PNG)
