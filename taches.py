@@ -167,6 +167,7 @@ def closeFile(event=None):
     if changed:
         answer = mb.askyesnocancel(title="TaskManager - " + title, message="Do you want to save changed in the file?")
         if answer == None:
+            changed = False
             return
         if answer:
             with open(currFile, "w") as f:
@@ -185,6 +186,7 @@ def closeFile(event=None):
     dated.set_date(date.today())
     datef.set_date(date.today())
     B2["state"] = "disabled"
+    changed = False
      
      
 def removeTask(event = None):
@@ -359,9 +361,9 @@ tk.Button(AboutFrame, text="Hide", anchor="w", command=about).pack(side="right")
 
 ## Help Frame
 HelpFrame = tk.Frame(fen)
-tk.Label(HelpFrame, text="Help", font='Helvetica 18 bold').pack()
-tk.Label(HelpFrame, text="TaskManager is simple Python application to manage tasks.").pack()
-tk.Label(HelpFrame, text="The data are stored in JSON files.").pack()
+#tk.Label(HelpFrame, text="Help", font='Helvetica 18 bold').pack()
+#tk.Label(HelpFrame, text="TaskManager is simple Python application to manage tasks.").pack()
+#tk.Label(HelpFrame, text="The data are stored in JSON files.").pack()
 tk.Label(HelpFrame, text="Shortcuts", font='Helvetica 18 bold').pack()
 
 shortcutFrame = tk.Frame(HelpFrame)
@@ -393,8 +395,11 @@ tk.Label(shortcutFrame, text=" Delete selected task").grid(row=6, column=1, stic
 tk.Label(shortcutFrame, text="<Atl>-<A>:", font="bold").grid(row=7, column=0, sticky="E")
 tk.Label(shortcutFrame, text=" Toggle `About` Frame").grid(row=7, column=1, sticky="W")
 
-tk.Label(shortcutFrame, text="<F1>:", font="bold").grid(row=8, column=0, sticky="E")
-tk.Label(shortcutFrame, text=" Toggle `Help` Frame").grid(row=8, column=1, sticky="W")
+tk.Label(shortcutFrame, text="<Atl>-<V>:", font="bold").grid(row=8, column=0, sticky="E")
+tk.Label(shortcutFrame, text=" Validate current task").grid(row=8, column=1, sticky="W")
+
+tk.Label(shortcutFrame, text="<F1>:", font="bold").grid(row=9, column=0, sticky="E")
+tk.Label(shortcutFrame, text=" Toggle `Help` Frame").grid(row=9, column=1, sticky="W")
     
 shortcutFrame.pack()
 prog.mainloop()
