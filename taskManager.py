@@ -175,11 +175,9 @@ def closeFile(event=None):
     global currFile, tasks, changed, title
 
     if changed:
-        answer = mb.askyesnocancel(title="TaskManager - " + title,
-                                   message="""Do you want to save
-                                              changed in the file?""")
+        msg = "Do you want to save changes?"
+        answer = mb.askyesnocancel(title="TaskManager - " + title, message=msg)
         if answer is None:
-            changed = False
             return
         if answer:
             with open(currFile, "w") as f:
@@ -252,22 +250,22 @@ def helpApp(event=None):
 
 def quitApp(event=None):
     global currFile, tasks, changed, title
-
     if changed:
-        answer = mb.askyesnocancel(title="TaskManager - " + title,
-                                   message="""Do you want to save
-                                              changed in the file?""")
+        if currFile is None:
+            msg = "Do you want to save changes in a file?"
+        else:
+            msg = "Do you want to save changes in the file?"
+        answer = mb.askyesnocancel(title="TaskManager - " + title, message=msg)
         if answer is None:
             return
         if answer:
-            with open(currFile, "w") as f:
-                json.dump(tasks, f, indent=4)
+            saveInFile()
     prog.quit()
 
 
 def printPDF(event=None):
-    mb.showinfo(title="TaskManager",
-                message="This functionality is not yet developped!")
+    msg = "This functionality is not yet developped!"
+    mb.showinfo(title="TaskManager", message=msg)
 
 
 prog = tk.Tk()
@@ -438,4 +436,6 @@ tk.Label(shortcutFrame, text=" Toggle `Help` Frame").grid(row=9, column=1,
                                                           sticky="W")
 
 shortcutFrame.pack()
+# detect window close
+prog.protocol("WM_DELETE_WINDOW", quitApp)
 prog.mainloop()
