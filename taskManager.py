@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import tkinter as tk
 from tkinter import ttk
 import tkcalendar as cal
@@ -101,7 +103,9 @@ def openFile(event=None):
                                   filetypes=[("JSON Files", "*.json")])
     if filename == "" or len(filename) == 0:
         return
-    closeFile()
+    res = closeFile()
+    if not res:
+        return
     with open(filename, "r") as f:
         changed = False
         tasks = json.load(f)
@@ -178,10 +182,11 @@ def closeFile(event=None):
         msg = "Do you want to save changes?"
         answer = mb.askyesnocancel(title="TaskManager - " + title, message=msg)
         if answer is None:
-            return
+            return False
         if answer:
             with open(currFile, "w") as f:
                 json.dump(tasks, f, indent=4)
+    return True
 
     filemenu.entryconfigure(3, state="disabled")
     svt.set("")
