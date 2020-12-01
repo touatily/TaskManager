@@ -427,11 +427,11 @@ tk.Label(shortcutFrame, text="<Alt>-<D>:", font="bold").grid(row=6, column=0,
 tk.Label(shortcutFrame, text=" Delete selected task").grid(row=6, column=1,
                                                            sticky="W")
 
-tk.Label(shortcutFrame, text="<Atl>-<A>:", font="bold").grid(row=7, column=0,
+tk.Label(shortcutFrame, text="<Alt>-<A>:", font="bold").grid(row=7, column=0,
                                                              sticky="E")
 tk.Label(shortcutFrame, text=" Toggle `About` Frame").grid(row=7, column=1,
                                                            sticky="W")
-tk.Label(shortcutFrame, text="<Atl>-<V>:", font="bold").grid(row=8, column=0,
+tk.Label(shortcutFrame, text="<Alt>-<V>:", font="bold").grid(row=8, column=0,
                                                              sticky="E")
 tk.Label(shortcutFrame, text=" Validate current task").grid(row=8, column=1,
                                                             sticky="W")
