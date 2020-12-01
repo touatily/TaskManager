@@ -186,7 +186,6 @@ def closeFile(event=None):
         if answer:
             with open(currFile, "w") as f:
                 json.dump(tasks, f, indent=4)
-    return True
 
     filemenu.entryconfigure(3, state="disabled")
     svt.set("")
@@ -202,6 +201,7 @@ def closeFile(event=None):
     datef.set_date(date.today())
     B2["state"] = "disabled"
     changed = False
+    return True
 
 
 def removeTask(event=None):
